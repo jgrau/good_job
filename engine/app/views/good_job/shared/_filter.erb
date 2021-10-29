@@ -32,7 +32,7 @@
       <% end %>
     </div>
 
-    <div>
+    <div class='me-4'>
       <small>Filter by queue</small>
       <br>
       <% filter.queues.each do |name, count| %>
@@ -45,6 +45,20 @@
             <%= name %> (<%= count %>)
           <% end %>
         <% end %>
+      <% end %>
+    </div>
+
+    <div>
+      <%= form_with(url: "", method: :get) do |form| %>
+        <% filter.to_params(query: nil).each do |key, value| %>
+          <%= form.hidden_field(key.to_sym, value: value) %>
+        <% end %>
+
+        <small><%= form.label :query, "Search" %></small>
+        <div class="input-group input-group-sm">
+          <%= form.text_field :query, value: params[:query], class: "form-control" %>
+            <%= form.button "Search", type: "submit", name: nil, class: "btn btn-sm btn-outline-secondary" %>
+        </div>
       <% end %>
     </div>
   </div>

@@ -174,6 +174,12 @@ module GoodJob
       query
     end)
 
+    scope :search, (lambda do |query|
+      tsvector = "(to_tsvector('english', serialized_params) || to_tsvector('english', id::text) || to_tsvector('english', COALESCE(error, '')::text))"
+      where("#{tsvector} @@ to_tsquery(?)", query)
+        .order(sanitize_sql_for_order([Arel.sql("ts_rank(#{tsvector}, to_tsquery(?)) DESC"), query]))
+    end)
+
     # Finds the next eligible Execution, acquire an advisory lock related to it, and
     # executes the job.
     # @return [ExecutionResult, nil]
